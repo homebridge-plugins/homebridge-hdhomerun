@@ -3,15 +3,16 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import process from 'node:process'
 
 import { describe, expect, it } from 'vitest'
 
 import { TunerAccessory } from '../lib/accessory.js'
 import { parseActivity } from '../lib/activity.js'
 import { EnergyMeter } from '../lib/energy.js'
+import { Guide } from '../lib/guide.js'
 import * as hdhr from '../lib/hdhr.js'
 import plugin from '../lib/index.js'
+import { MatterPublisher } from '../lib/matter.js'
 import { DeviceMonitor } from '../lib/monitor.js'
 import { OnlineAccessory } from '../lib/online-accessory.js'
 import { ReceptionWatch } from '../lib/reception.js'
@@ -496,7 +497,7 @@ describe('end to end', () => {
     // guide, Channels DVR, reception per channel
     const services = createServices({ port: 18200 })
     await services.start()
-    process.env.HDHR_GUIDE_URL = `${services.url}/api/guide.php`
+    Guide.url = `${services.url}/api/guide.php`
     const mock4 = createMock({ port: HTTP + 3 })
     await mock4.start()
     await fetch(`http://127.0.0.1:${HTTP + 3}/mock`, {
@@ -932,8 +933,8 @@ describe('end to end', () => {
   }, 180_000)
 
   it('tV In Use over Matter, with estimated watts and kWh', async () => {
-    process.env.HDHR_MATTER_POWER_MS = '200'
-    process.env.HDHR_MATTER_ENERGY_MS = '500'
+    MatterPublisher.powerPushMs = 200
+    MatterPublisher.energyPushMs = 500
     const em = new EnergyMeter({})
     em.tick(4, 0)
     em.tick(4, 3600_000, 3600_000)
