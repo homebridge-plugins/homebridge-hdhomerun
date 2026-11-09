@@ -4,6 +4,9 @@ name: Release
 # - Latest: Triggered by GitHub releases (tag vX.Y.Z)
 # - Beta: Triggered by pushes to beta-X.Y.Z branches
 # - Alpha: Triggered by pushes to alpha-X.Y.Z branches
+#
+# The first version of a new package is published by hand: npm only lets a trusted
+# publisher (this workflow) be set up once the package exists.
 
 on:
   release:

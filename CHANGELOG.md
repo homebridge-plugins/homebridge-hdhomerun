@@ -2,6 +2,12 @@
 
 All notable changes to `@homebridge-plugins/homebridge-hdhomerun` will be documented in this file.
 
+## v1.0.1 (Pending Release)
+
+### Changed
+
+- ci: note in the release workflow that a new package's first version is published by hand
+
 ## v1.0.0 (2026-11-09)
 
 ### Added
