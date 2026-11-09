@@ -2,7 +2,7 @@
 
 All notable changes to `@homebridge-plugins/homebridge-hdhomerun` will be documented in this file.
 
-## v1.0.0 (Pending Release)
+## v1.0.0 (2026-11-09)
 
 ### Added
 
