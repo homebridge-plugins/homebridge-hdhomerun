@@ -1,9 +1,7 @@
-'use strict';
-
 /** Just enough of the Homebridge API and HAP to run the plugin in tests. */
 
-const crypto = require('crypto');
-const { EventEmitter } = require('events');
+import crypto from 'node:crypto';
+import { EventEmitter } from 'node:events';
 
 class Characteristic {
   constructor(name) {
@@ -151,4 +149,4 @@ function createLog(lines = []) {
   return log;
 }
 
-module.exports = { createApi, createMatter, createLog, PlatformAccessory, Service: S, Characteristic: C };
+export { createApi, createMatter, createLog, PlatformAccessory, S as Service, C as Characteristic };

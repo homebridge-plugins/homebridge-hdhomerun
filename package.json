@@ -1,53 +1,55 @@
 {
-  "name": "homebridge-hdhomerun-monitor",
-  "displayName": "HDHomeRun Monitor",
-  "version": "1.7.0",
-  "description": "Your SiliconDust HDHomeRun and Channels DVR online channels in Apple Home over HomeKit or Matter: one TV In Use switch (or one per tuner) with estimated watts and kWh, a poor-reception sensor, and a live dashboard of channels, now and next, recordings, reception and viewing statistics, in Homebridge Config UI X and at http://<homebridge>:8588/",
-  "main": "src/index.js",
+  "name": "@homebridge-plugins/homebridge-hdhomerun",
+  "alias": "HDHomeRun",
+  "displayName": "Homebridge HDHomeRun",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Homebridge plugin to show SiliconDust HDHomeRun tuners and Channels DVR in Apple Home, with a live dashboard.",
+  "author": "homebridge-plugins",
   "license": "MIT",
-  "author": "YOUR NAME",
+  "homepage": "https://github.com/homebridge-plugins/homebridge-hdhomerun",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor.git"
+    "url": "git+https://github.com/homebridge-plugins/homebridge-hdhomerun.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor/issues"
+    "url": "https://github.com/homebridge-plugins/homebridge-hdhomerun/issues"
   },
-  "homepage": "https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor#readme",
   "keywords": [
-    "homebridge-plugin",
     "homebridge",
+    "homebridge-plugin",
+    "supports-hap",
+    "supports-matter",
+    "homebridge-hdhomerun",
+    "homekit",
     "hdhomerun",
     "silicondust",
     "tv tuner",
-    "freeview",
-    "dashboard",
-    "homekit",
     "channels dvr",
-    "m3u",
-    "iptv",
-    "matter",
-    "energy",
-    "supports-matter"
+    "energy"
   ],
+  "main": "lib/index.js",
   "engines": {
-    "homebridge": "^1.8.0 || ^2.0.0-beta.0",
-    "node": "^18.20.0 || ^20.15.1 || ^22 || ^24"
+    "homebridge": "^1.11.4 || ^2.0.0",
+    "node": "^22.12.0 || ^24.0.0 || ^26.0.0"
   },
-  "files": [
-    "src",
-    "homebridge-ui",
-    "config.schema.json",
-    "README.md",
-    "LICENSE",
-    "docs",
-    "CHANGELOG.md"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "test": "node test/run.js",
-    "mock": "node test/mock-hdhomerun.js"
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test-coverage": "npm run test -- --coverage",
+    "changelog:sync": "node .github/scripts/sync-changelog.mjs"
   },
   "dependencies": {
-    "@homebridge/plugin-ui-utils": "^2.0.0"
+    "@homebridge/plugin-ui-utils": "^2.2.7"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^10.0.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "vitest": "^5.1.0"
   }
 }

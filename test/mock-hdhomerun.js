@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * A pretend HDHomeRun DUO for testing without one:
  *   HTTP  discover.json, lineup.json, lineup_status.json, status.json (or 404 with --no-status-json)
@@ -10,10 +8,12 @@
  *   node test/mock-hdhomerun.js [--port 8080] [--no-status-json] [--auto]
  */
 
-const http = require('http');
-const net = require('net');
-const dgram = require('dgram');
-const hdhr = require('../src/hdhr');
+import http from 'node:http';
+import net from 'node:net';
+import dgram from 'node:dgram';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import * as hdhr from '../lib/hdhr.js';
 
 const { consts: C } = hdhr;
 
@@ -144,11 +144,11 @@ function createMock({ port = 8080, statusJson = true, auto = false, controlPort 
   };
 }
 
-if (require.main === module) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = process.argv.slice(2);
   const port = Number(args[args.indexOf('--port') + 1]) || 8080;
   const mock = createMock({ port, statusJson: !args.includes('--no-status-json'), auto: args.includes('--auto') });
   mock.start().then(() => console.log(`mock HDHomeRun at http://127.0.0.1:${port}/ (control and discovery on 65001)`));
 }
 
-module.exports = { createMock };
+export { createMock };

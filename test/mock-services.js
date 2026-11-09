@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Pretend SiliconDust guide and Channels DVR server, for tests and the demo.
  *   GET /api/guide.php?DeviceAuth=abc   guide for the mock HDHomeRun's channels
@@ -7,7 +5,7 @@
  *   GET /api/v1/episodes, /api/v1/movies  recorded items
  */
 
-const http = require('http');
+import http from 'node:http';
 
 const SHOWS = {
   1: ['Breakfast', 'Te Karere', 'TVNZ News at Six', 'Fair Go', 'Country Calendar', 'The Tonight Show'],
@@ -84,4 +82,4 @@ function defaultJobs(now) {
   ];
 }
 
-module.exports = { createServices };
+export { createServices };
