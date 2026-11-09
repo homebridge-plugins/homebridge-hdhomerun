@@ -360,7 +360,7 @@
             "type": "string",
             "default": "Online TV",
             "placeholder": "Online TV",
-            "description": "The switch is called \"<Name> In Use\"."
+            "description": "The switch is called \"(this name) In Use\", for example \"Online TV In Use\"."
           },
           "onlineSwitch": {
             "title": "\"In Use\" switch (on while any online channel is watched)",
