@@ -1,0 +1,53 @@
+{
+  "name": "homebridge-hdhomerun-monitor",
+  "displayName": "HDHomeRun Monitor",
+  "version": "1.7.0",
+  "description": "Your SiliconDust HDHomeRun and Channels DVR online channels in Apple Home over HomeKit or Matter: one TV In Use switch (or one per tuner) with estimated watts and kWh, a poor-reception sensor, and a live dashboard of channels, now and next, recordings, reception and viewing statistics, in Homebridge Config UI X and at http://<homebridge>:8588/",
+  "main": "src/index.js",
+  "license": "MIT",
+  "author": "YOUR NAME",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor/issues"
+  },
+  "homepage": "https://github.com/YOUR-GITHUB-USERNAME/homebridge-hdhomerun-monitor#readme",
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "hdhomerun",
+    "silicondust",
+    "tv tuner",
+    "freeview",
+    "dashboard",
+    "homekit",
+    "channels dvr",
+    "m3u",
+    "iptv",
+    "matter",
+    "energy",
+    "supports-matter"
+  ],
+  "engines": {
+    "homebridge": "^1.8.0 || ^2.0.0-beta.0",
+    "node": "^18.20.0 || ^20.15.1 || ^22 || ^24"
+  },
+  "files": [
+    "src",
+    "homebridge-ui",
+    "config.schema.json",
+    "README.md",
+    "LICENSE",
+    "docs",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node test/run.js",
+    "mock": "node test/mock-hdhomerun.js"
+  },
+  "dependencies": {
+    "@homebridge/plugin-ui-utils": "^2.0.0"
+  }
+}

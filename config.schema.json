@@ -1,0 +1,702 @@
+{
+  "pluginAlias": "HDHomeRunMonitor",
+  "pluginType": "platform",
+  "singular": true,
+  "customUi": true,
+  "headerDisplay": "Your HDHomeRun tuners in HomeKit, with a live dashboard at http://<this machine>:8588/",
+  "footerDisplay": "Leave Devices empty to find tuners on the network automatically. Channels DVR on this machine is found by itself.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "HDHomeRun Monitor",
+        "required": true
+      },
+      "appleHome": {
+        "title": "Apple Home connection",
+        "type": "string",
+        "default": "matter",
+        "oneOf": [
+          {
+            "title": "HomeKit, with watts on TV In Use over Matter (when Matter is on)",
+            "enum": [
+              "matter"
+            ]
+          },
+          {
+            "title": "Matter only \u2014 everything over Matter, one Matter pairing",
+            "enum": [
+              "matterOnly"
+            ]
+          },
+          {
+            "title": "HomeKit only",
+            "enum": [
+              "homekit"
+            ]
+          }
+        ],
+        "description": "Matter needs Homebridge 2.3+ with \"Enable Matter\" on for this plugin's bridge, and iOS/tvOS 27+ for watts. For Matter only, run the plugin as a child bridge with HAP off and add it to the Home app with its Matter code. Without Matter, HomeKit is used. Changing this means adding the accessories to the Home app again, and their automations."
+      },
+      "homekitLayout": {
+        "title": "Switches",
+        "type": "string",
+        "default": "combined",
+        "oneOf": [
+          {
+            "title": "One switch: \"TV In Use\" \u2014 on while anything is watched or recorded",
+            "enum": [
+              "combined"
+            ]
+          },
+          {
+            "title": "Separate switches \u2014 per tuner, In Use, All Busy, Online TV, per channel",
+            "enum": [
+              "separate"
+            ]
+          }
+        ],
+        "description": "TV In Use covers the HDHomeRun tuners, Channels DVR online channels and recordings in one switch."
+      },
+      "combined": {
+        "title": "TV In Use switch",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "default": "TV In Use",
+            "placeholder": "TV In Use"
+          },
+          "includeRecordings": {
+            "title": "Recordings turn it on too",
+            "type": "boolean",
+            "default": true
+          },
+          "sensorType": {
+            "title": "Show as",
+            "type": "string",
+            "default": "switch",
+            "oneOf": [
+              {
+                "title": "Switch",
+                "enum": [
+                  "switch"
+                ]
+              },
+              {
+                "title": "Occupancy sensor (for Home app notifications)",
+                "enum": [
+                  "occupancy"
+                ]
+              }
+            ]
+          },
+          "onDelaySeconds": {
+            "title": "Turn on after (seconds)",
+            "type": "integer",
+            "default": 30,
+            "minimum": 0,
+            "maximum": 600,
+            "description": "Skips channel surfing and quick checks."
+          },
+          "offDelaySeconds": {
+            "title": "Turn off after idle (seconds)",
+            "type": "integer",
+            "default": 120,
+            "minimum": 0,
+            "maximum": 1800,
+            "description": "Rides over channel changes and gaps between programmes."
+          }
+        }
+      },
+      "energy": {
+        "title": "Estimated energy",
+        "type": "object",
+        "properties": {
+          "idleWatts": {
+            "title": "HDHomeRun idle (watts)",
+            "type": "number",
+            "default": 3,
+            "minimum": 0,
+            "maximum": 50,
+            "description": "The HDHomeRun has no power meter, so this is an estimate. Measure it with a smart plug to make it exact."
+          },
+          "tunerWatts": {
+            "title": "Extra per busy tuner (watts)",
+            "type": "number",
+            "default": 1,
+            "minimum": 0,
+            "maximum": 20
+          },
+          "onlineStreamWatts": {
+            "title": "Extra per online stream (watts)",
+            "type": "number",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Optional: add the draw of whatever plays online channels. The HDHomeRun uses nothing for them."
+          },
+          "pricePerKwh": {
+            "title": "Power price per kWh",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "placeholder": "0.30",
+            "description": "Optional, in your currency (e.g. 0.30 for 30c/kWh): the dashboard shows the cost."
+          }
+        }
+      },
+      "devices": {
+        "title": "Devices",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "placeholder": "Lounge HDHomeRun",
+              "description": "Shown in HomeKit, the log and the dashboard. Defaults to the device's own name."
+            },
+            "host": {
+              "title": "Address",
+              "type": "string",
+              "placeholder": "192.168.1.30",
+              "description": "IP address or host name. Leave empty to find the device by its ID."
+            },
+            "deviceId": {
+              "title": "Device ID",
+              "type": "string",
+              "placeholder": "1050ABCD",
+              "pattern": "^[0-9A-Fa-f]{8}$",
+              "description": "On the label underneath the device. Lets the plugin follow it if its address changes."
+            },
+            "homekit": {
+              "title": "Show in HomeKit",
+              "type": "boolean",
+              "default": true
+            },
+            "sensorType": {
+              "title": "Show tuners in HomeKit as",
+              "type": "string",
+              "default": "switch",
+              "oneOf": [
+                {
+                  "title": "Switches (on while streaming)",
+                  "enum": [
+                    "switch"
+                  ]
+                },
+                {
+                  "title": "Occupancy sensors (occupied while streaming)",
+                  "enum": [
+                    "occupancy"
+                  ]
+                }
+              ],
+              "description": "Switches turn on and off by themselves; tapping one changes nothing. Occupancy sensors can send Home app notifications. Changing this replaces them in HomeKit, with any automations on them."
+            },
+            "tunerSensors": {
+              "title": "One per tuner (Tuner 1, Tuner 2\u2026)",
+              "type": "boolean",
+              "default": true
+            },
+            "tuners": {
+              "title": "Tuners to show",
+              "type": "array",
+              "uniqueItems": true,
+              "description": "Tick the tuners to show in HomeKit. Leave them all unticked to show every tuner. Tuners your HDHomeRun doesn't have are ignored.",
+              "items": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8
+                ]
+              }
+            },
+            "anyTunerSensor": {
+              "title": "\"In Use\" (on while any tuner is streaming)",
+              "type": "boolean",
+              "default": true
+            },
+            "allBusySensor": {
+              "title": "\"All Busy\" (on while every tuner is streaming)",
+              "type": "boolean",
+              "default": false
+            },
+            "onlineSensor": {
+              "title": "\"Online\" contact sensor",
+              "type": "boolean",
+              "default": false
+            },
+            "onDelaySeconds": {
+              "title": "Turn on after (seconds)",
+              "type": "integer",
+              "default": 30,
+              "minimum": 0,
+              "maximum": 600,
+              "description": "How long a tuner must stream before its switch turns on. Skips channel surfing and quick checks."
+            },
+            "offDelaySeconds": {
+              "title": "Turn off after idle (seconds)",
+              "type": "integer",
+              "default": 120,
+              "minimum": 0,
+              "maximum": 1800,
+              "description": "How long a tuner must be idle before its switch turns off. Rides over channel changes and gaps between programmes."
+            },
+            "poorReceptionSensor": {
+              "title": "\"Poor Reception\" sensor",
+              "type": "boolean",
+              "default": true,
+              "description": "An occupancy sensor that comes on when signal quality stays low. Turn on its notifications in the Home app."
+            },
+            "poorReceptionThreshold": {
+              "title": "Poor below signal quality (%)",
+              "type": "integer",
+              "default": 60,
+              "minimum": 10,
+              "maximum": 100
+            },
+            "poorReceptionMinutes": {
+              "title": "For at least (minutes)",
+              "type": "number",
+              "default": 3,
+              "minimum": 0,
+              "maximum": 60
+            },
+            "idleWatts": {
+              "title": "Idle (watts)",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50,
+              "placeholder": "3",
+              "description": "Overrides the estimate for this HDHomeRun."
+            },
+            "tunerWatts": {
+              "title": "Per busy tuner (watts)",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 20,
+              "placeholder": "1"
+            }
+          }
+        }
+      },
+      "discovery": {
+        "title": "Find HDHomeRuns on the network automatically",
+        "type": "boolean",
+        "default": true,
+        "description": "Also follows a device to a new address. Turn off to use only the devices listed."
+      },
+      "pollSeconds": {
+        "title": "Check tuners every (seconds)",
+        "type": "integer",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 60
+      },
+      "clients": {
+        "title": "Client names",
+        "description": "Names for the devices watching, by IP address. Without one, the plugin uses the reverse DNS name if there is one.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ip": {
+              "title": "IP address",
+              "type": "string",
+              "placeholder": "192.168.1.20"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "placeholder": "Lounge Apple TV"
+            }
+          }
+        }
+      },
+      "guide": {
+        "title": "Show now and next from the SiliconDust guide",
+        "type": "boolean",
+        "default": true,
+        "description": "Uses the guide the HDHomeRun app shows, where SiliconDust has one for your area."
+      },
+      "channelsDvr": {
+        "title": "Channels DVR",
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "title": "Use Channels DVR (recordings and online channels)",
+            "type": "boolean",
+            "default": true
+          },
+          "url": {
+            "title": "Channels DVR address",
+            "type": "string",
+            "placeholder": "http://192.168.1.5:8089",
+            "description": "Leave empty if Channels DVR runs on this Homebridge machine; it is found by itself."
+          },
+          "homekit": {
+            "title": "Show online channels in HomeKit",
+            "type": "boolean",
+            "default": true,
+            "description": "Switches for the channels Channels DVR streams from your M3U (and other online) sources, which the HDHomeRun never sees."
+          },
+          "switchName": {
+            "title": "Name",
+            "type": "string",
+            "default": "Online TV",
+            "placeholder": "Online TV",
+            "description": "The switch is called \"<Name> In Use\"."
+          },
+          "onlineSwitch": {
+            "title": "\"In Use\" switch (on while any online channel is watched)",
+            "type": "boolean",
+            "default": true
+          },
+          "channelSwitches": {
+            "title": "A switch for these channels",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "title": "Channel number",
+              "placeholder": "104"
+            },
+            "description": "Channel numbers as Channels DVR shows them. Each gets its own switch, on while that channel is watched through Channels DVR, from any source."
+          },
+          "includeRecordings": {
+            "title": "Recordings turn the switches on too",
+            "type": "boolean",
+            "default": false
+          },
+          "sensorType": {
+            "title": "Show as",
+            "type": "string",
+            "default": "switch",
+            "oneOf": [
+              {
+                "title": "Switches",
+                "enum": [
+                  "switch"
+                ]
+              },
+              {
+                "title": "Occupancy sensors (for Home app notifications)",
+                "enum": [
+                  "occupancy"
+                ]
+              }
+            ]
+          },
+          "onDelaySeconds": {
+            "title": "Turn on after (seconds)",
+            "type": "integer",
+            "default": 30,
+            "minimum": 0,
+            "maximum": 600
+          },
+          "offDelaySeconds": {
+            "title": "Turn off after idle (seconds)",
+            "type": "integer",
+            "default": 120,
+            "minimum": 0,
+            "maximum": 1800
+          }
+        }
+      },
+      "dashboard": {
+        "title": "Web dashboard",
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "title": "Serve the dashboard",
+            "type": "boolean",
+            "default": true
+          },
+          "port": {
+            "title": "Port",
+            "type": "integer",
+            "default": 8588,
+            "minimum": 1024,
+            "maximum": 65535
+          },
+          "host": {
+            "title": "Listen on",
+            "type": "string",
+            "default": "0.0.0.0",
+            "description": "0.0.0.0 for every network interface, 127.0.0.1 for this machine only."
+          }
+        }
+      },
+      "logSessions": {
+        "title": "Log each channel watched",
+        "type": "boolean",
+        "default": true
+      },
+      "keepDays": {
+        "title": "Keep statistics for (days)",
+        "type": "integer",
+        "default": 400,
+        "minimum": 7
+      }
+    }
+  },
+  "layout": [
+    "name",
+    "appleHome",
+    "homekitLayout",
+    {
+      "type": "fieldset",
+      "title": "TV In Use switch",
+      "expandable": true,
+      "condition": {
+        "functionBody": "return model.homekitLayout !== 'separate';"
+      },
+      "items": [
+        "combined.name",
+        "combined.includeRecordings",
+        "combined.sensorType",
+        {
+          "type": "flex",
+          "flex-flow": "row wrap",
+          "items": [
+            "combined.onDelaySeconds",
+            "combined.offDelaySeconds"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Estimated energy",
+      "expandable": true,
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row wrap",
+          "items": [
+            "energy.idleWatts",
+            "energy.tunerWatts",
+            "energy.onlineStreamWatts"
+          ]
+        },
+        "energy.pricePerKwh"
+      ]
+    },
+    {
+      "key": "devices",
+      "type": "array",
+      "orderable": false,
+      "buttonText": "Add HDHomeRun",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row wrap",
+          "items": [
+            "devices[].name",
+            "devices[].host",
+            "devices[].deviceId"
+          ]
+        },
+        {
+          "type": "fieldset",
+          "title": "HomeKit",
+          "expandable": true,
+          "items": [
+            "devices[].homekit",
+            {
+              "type": "fieldset",
+              "title": "Separate switches",
+              "condition": {
+                "functionBody": "return model.homekitLayout === 'separate';"
+              },
+              "items": [
+                "devices[].sensorType",
+                "devices[].tunerSensors",
+                {
+                  "key": "devices[].tuners",
+                  "type": "checkboxes",
+                  "titleMap": [
+                    {
+                      "value": 1,
+                      "name": "Tuner 1"
+                    },
+                    {
+                      "value": 2,
+                      "name": "Tuner 2"
+                    },
+                    {
+                      "value": 3,
+                      "name": "Tuner 3"
+                    },
+                    {
+                      "value": 4,
+                      "name": "Tuner 4"
+                    },
+                    {
+                      "value": 5,
+                      "name": "Tuner 5"
+                    },
+                    {
+                      "value": 6,
+                      "name": "Tuner 6"
+                    },
+                    {
+                      "value": 7,
+                      "name": "Tuner 7"
+                    },
+                    {
+                      "value": 8,
+                      "name": "Tuner 8"
+                    }
+                  ]
+                },
+                "devices[].anyTunerSensor",
+                "devices[].allBusySensor"
+              ]
+            },
+            "devices[].onlineSensor"
+          ]
+        },
+        {
+          "type": "fieldset",
+          "title": "Ignore channel surfing (separate switches)",
+          "expandable": true,
+          "items": [
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": [
+                "devices[].onDelaySeconds",
+                "devices[].offDelaySeconds"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.homekitLayout === 'separate';"
+          }
+        },
+        {
+          "type": "fieldset",
+          "title": "Poor reception alert",
+          "expandable": true,
+          "items": [
+            "devices[].poorReceptionSensor",
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": [
+                "devices[].poorReceptionThreshold",
+                "devices[].poorReceptionMinutes"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fieldset",
+          "title": "Estimated energy",
+          "expandable": true,
+          "items": [
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": [
+                "devices[].idleWatts",
+                "devices[].tunerWatts"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "discovery",
+    "guide",
+    {
+      "type": "fieldset",
+      "title": "Channels DVR",
+      "expandable": true,
+      "items": [
+        "channelsDvr.enabled",
+        "channelsDvr.url",
+        {
+          "type": "fieldset",
+          "title": "Online channels (M3U) in HomeKit",
+          "expandable": true,
+          "items": [
+            "channelsDvr.homekit",
+            "channelsDvr.switchName",
+            "channelsDvr.onlineSwitch",
+            {
+              "key": "channelsDvr.channelSwitches",
+              "type": "array",
+              "buttonText": "Add channel",
+              "items": [
+                "channelsDvr.channelSwitches[]"
+              ]
+            },
+            "channelsDvr.includeRecordings",
+            "channelsDvr.sensorType",
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": [
+                "channelsDvr.onDelaySeconds",
+                "channelsDvr.offDelaySeconds"
+              ]
+            }
+          ],
+          "condition": {
+            "functionBody": "return model.homekitLayout === 'separate';"
+          }
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Dashboard",
+      "expandable": true,
+      "items": [
+        "dashboard.enabled",
+        "dashboard.port",
+        "dashboard.host"
+      ]
+    },
+    {
+      "key": "clients",
+      "type": "array",
+      "title": "Client names",
+      "expandable": true,
+      "buttonText": "Add client",
+      "items": [
+        {
+          "type": "flex",
+          "flex-flow": "row wrap",
+          "items": [
+            "clients[].ip",
+            "clients[].name"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "More",
+      "expandable": true,
+      "items": [
+        "pollSeconds",
+        "logSessions",
+        "keepDays"
+      ]
+    }
+  ]
+}

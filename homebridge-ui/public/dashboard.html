@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HDHomeRun Monitor</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="standalone">
+  <div id="hdhr" class="hdhr"></div>
+  <script src="app.js"></script>
+  <script>
+    HDHRDashboard.start(document.getElementById('hdhr'), { mode: 'standalone' });
+  </script>
+</body>
+</html>

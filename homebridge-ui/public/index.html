@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="style.css">
+<div id="hdhr" class="hdhr embedded"></div>
+<script src="app.js"></script>
+<script>
+  (async () => {
+    let theme;
+    try { theme = await homebridge.userCurrentLightingMode(); } catch { /* older Config UI */ }
+    HDHRDashboard.start(document.getElementById('hdhr'), { mode: 'homebridge', theme });
+  })();
+</script>
