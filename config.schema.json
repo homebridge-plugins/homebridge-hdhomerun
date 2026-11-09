@@ -1,18 +1,21 @@
 {
-  "pluginAlias": "HDHomeRunMonitor",
+  "pluginAlias": "HDHomeRun",
   "pluginType": "platform",
   "singular": true,
   "customUi": true,
-  "headerDisplay": "Your HDHomeRun tuners in HomeKit, with a live dashboard at http://<this machine>:8588/",
+  "customUiPath": "./lib/homebridge-ui",
+  "headerDisplay": "<p align=\"center\"><img width=\"250px\" src=\"https://raw.githubusercontent.com/homebridge-plugins/homebridge-hdhomerun/latest/branding/Homebridge_x_HDHomeRun.png\"></p><p align=\"center\">For help and support please visit our <a href=\"https://github.com/homebridge-plugins/homebridge-hdhomerun/wiki\">GitHub Wiki</a>. We hope you find this plugin useful!</p>",
   "footerDisplay": "Leave Devices empty to find tuners on the network automatically. Channels DVR on this machine is found by itself.",
   "schema": {
     "type": "object",
+    "required": [
+      "name"
+    ],
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "HDHomeRun Monitor",
-        "required": true
+        "default": "HDHomeRun"
       },
       "appleHome": {
         "title": "Apple Home connection",
@@ -26,7 +29,7 @@
             ]
           },
           {
-            "title": "Matter only \u2014 everything over Matter, one Matter pairing",
+            "title": "Matter only — everything over Matter, one Matter pairing",
             "enum": [
               "matterOnly"
             ]
@@ -46,13 +49,13 @@
         "default": "combined",
         "oneOf": [
           {
-            "title": "One switch: \"TV In Use\" \u2014 on while anything is watched or recorded",
+            "title": "One switch: \"TV In Use\" — on while anything is watched or recorded",
             "enum": [
               "combined"
             ]
           },
           {
-            "title": "Separate switches \u2014 per tuner, In Use, All Busy, Online TV, per channel",
+            "title": "Separate switches — per tuner, In Use, All Busy, Online TV, per channel",
             "enum": [
               "separate"
             ]
@@ -200,7 +203,7 @@
               "description": "Switches turn on and off by themselves; tapping one changes nothing. Occupancy sensors can send Home app notifications. Changing this replaces them in HomeKit, with any automations on them."
             },
             "tunerSensors": {
-              "title": "One per tuner (Tuner 1, Tuner 2\u2026)",
+              "title": "One per tuner (Tuner 1, Tuner 2…)",
               "type": "boolean",
               "default": true
             },
