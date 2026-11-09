@@ -1,3 +1,5 @@
-node_modules/
-*.tgz
 .DS_Store
+.nova
+.npm
+node_modules
+.idea
