@@ -147,7 +147,13 @@ function createMatter({ enabled = true } = {}) {
     async registerPlatformAccessories(plugin, platform, list) {
       matter.registerCalls++
       for (const a of list) {
-        if (store.has(a.UUID)) {
+        const existing = store.get(a.UUID)
+        if (existing?.restored) {
+          // like Homebridge: the plugin's registration attaches its handlers to the restored one
+          Object.assign(existing, { accessory: a, handlers: a.handlers || {}, restored: false })
+          continue
+        }
+        if (existing) {
           throw new Error(`duplicate UUID ${a.UUID}`)
         }
         // completes asynchronously, like a child bridge
@@ -186,13 +192,19 @@ function createMatter({ enabled = true } = {}) {
         e.state.onOff = { onOff: cmd === 'on' }
       }
     },
-    /** What a restart leaves: cached state, no handlers, nothing registered. */
+    /**
+     * What a restart leaves, as Homebridge does it: each cached accessory is restored
+     * before the plugin starts, with its cached state and an empty handler per cluster
+     * (functions can't be cached). It shows as registered until the plugin registers it.
+     */
     restart() {
-      for (const [uuid, e] of store) cache.set(uuid, e.state)
-      const cached = [
-        ...store.values(),
-      ].map(e => ({ ...e.accessory, handlers: undefined }))
-      store.clear()
+      const cached = []
+      for (const [uuid, e] of store) {
+        cache.set(uuid, e.state)
+        const stubs = Object.fromEntries(Object.keys(e.state).map(cluster => [cluster, {}]))
+        store.set(uuid, { ...e, handlers: stubs, restored: true })
+        cached.push({ ...e.accessory, handlers: undefined })
+      }
       return cached
     },
     store,
