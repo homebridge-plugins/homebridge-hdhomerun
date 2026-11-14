@@ -7,6 +7,7 @@ All notable changes to `@homebridge-plugins/homebridge-hdhomerun` will be docume
 ### Changed
 
 - ci: note in the release workflow that a new package's first version is published by hand
+- ci: publish releases with node.js v26, the current lts
 
 ## v1.0.0 (2026-11-09)
 
