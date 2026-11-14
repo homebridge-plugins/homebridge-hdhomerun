@@ -3,7 +3,7 @@
   "alias": "HDHomeRun",
   "displayName": "Homebridge HDHomeRun",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Homebridge plugin to show SiliconDust HDHomeRun tuners and Channels DVR in Apple Home, with a live dashboard.",
   "author": "homebridge-plugins",
   "license": "MIT",
