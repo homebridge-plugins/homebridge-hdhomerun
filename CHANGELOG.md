@@ -7,6 +7,7 @@ All notable changes to `@homebridge-plugins/homebridge-hdhomerun` will be docume
 ### Changed
 
 - fix(ui): take the storage folder only from the homebridge ui, not from an environment variable
+- chore(deps): dependency updates
 
 ## v1.0.1 (2026-11-14)
 
