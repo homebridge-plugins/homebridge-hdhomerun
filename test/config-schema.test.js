@@ -103,3 +103,10 @@ describe('the settings schema', () => {
     expect(layoutKeys(schemaFile.layout).filter(key => !schemaHas(key))).toEqual([])
   })
 })
+
+describe('the settings server', () => {
+  it('reads no environment variable, as verification flags that for a manual review', () => {
+    const source = readFileSync(new URL('../lib/homebridge-ui/server.js', import.meta.url), 'utf8')
+    expect(source).not.toMatch(/process\.env/)
+  })
+})
