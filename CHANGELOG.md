@@ -2,6 +2,12 @@
 
 All notable changes to `@homebridge-plugins/homebridge-hdhomerun` will be documented in this file.
 
+## v1.0.3 (Pending Release)
+
+### Changed
+
+- chore(deps): dependency updates
+
 ## v1.0.2 (2026-11-16)
 
 ### Changed
